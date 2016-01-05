@@ -42,7 +42,8 @@ controller.hears('(image|img)( me)? (.*)',['direct_message','direct_mention'], f
     q: message.match[3],
     fields: 'items(link)',
     searchType: 'image',
-    safe: 'high'
+    safe: 'high',
+    imgSize: 'medium'
   }
   scoped_http.create('https://www.googleapis.com')
     .header('accept', 'application/json')
