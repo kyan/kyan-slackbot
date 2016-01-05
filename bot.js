@@ -11,7 +11,7 @@ if (!process.env.REDIS_URL) {
 }
 
 // Configure storage
-var redis_storage = require('botkit/lib/storage/redis_storage')({
+var redis_storage = require('./lib/storage/redis_storage')({
   url: process.env.REDIS_URL
 });
 
