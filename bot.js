@@ -33,6 +33,31 @@ controller.hears(['hello','hi','yo'],'direct_message', function(bot,message) {
   bot.reply(message,"Hello!");
 });
 
+// Images
+// https://www.googleapis.com/customsearch/v1?q=fish&key=xxx&cx=015341995632582849377:yi5ly04saha
+controller.hears('(image|img)( me)? (.*)','direct_message', function(bot,message) {
+  var params = {
+    key: process.env.GOOGLE_API_KEY,
+    cx: process.env.GOOGLE_CX,
+    q: message.match[3],
+    fields: 'items(link)',
+    searchType: 'image',
+    safe: 'high'
+  }
+  scoped_http.create('https://www.googleapis.com')
+    .header('accept', 'application/json')
+    .path('/customsearch/v1')
+    .query(params)
+    .get()(function(err, resp, body) {
+      var result = JSON.parse(body);
+      var images = result.items.map(function(item) {
+        return item.link;
+      });
+      var image = images[Math.floor(Math.random()*images.length)];
+      bot.reply(message, image);
+    })
+});
+
 // Needed to stop Heroku bailing
 controller.setupWebserver(process.env.PORT,function(err,webserver) {
   // do nothing yet
