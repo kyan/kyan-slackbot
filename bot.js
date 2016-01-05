@@ -35,7 +35,7 @@ controller.hears(['hello','hi','yo'],'direct_message', function(bot,message) {
 
 // Images
 // https://www.googleapis.com/customsearch/v1?q=fish&key=xxx&cx=015341995632582849377:yi5ly04saha
-controller.hears('(image|img)( me)? (.*)','direct_message', function(bot,message) {
+controller.hears('(image|img)( me)? (.*)',['direct_message','direct_mention'], function(bot,message) {
   var params = {
     key: process.env.GOOGLE_API_KEY,
     cx: process.env.GOOGLE_CX,
