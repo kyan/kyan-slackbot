@@ -1,4 +1,5 @@
 var Botkit = require('botkit');
+var scoped_http = require('scoped-http-client');
 
 // Check for ENV's
 if (!process.env.SLACK_TOKEN || !process.env.REDIS_URL || !process.env.PORT) {
@@ -27,9 +28,9 @@ controller.spawn({
   }
 });
 
-// Simple listener (reply to IM containing hello or hi.)
+// Polite
 controller.hears(['hello','hi','yo'],'direct_message', function(bot,message) {
-  bot.reply(message,"Hello from BRH.");
+  bot.reply(message,"Hello!");
 });
 
 // Needed to stop Heroku bailing
