@@ -1,5 +1,4 @@
 var Botkit = require('botkit');
-var scoped_http = require('scoped-http-client');
 
 // Check for ENV's
 if (!process.env.SLACK_TOKEN || !process.env.REDIS_URL || !process.env.PORT) {
@@ -33,11 +32,15 @@ controller.hears(['hello','hi','yo'],'direct_message', function(bot,message) {
   bot.reply(message,"Hello!");
 });
 
-// Images
-// https://www.googleapis.com/customsearch/v1?q=fish&key=xxx&cx=015341995632582849377:yi5ly04saha
+//
+// image me <string>
+// Finds images using Google Web Search API
+//
 controller.hears('(image|img)( me)? (.*)',['direct_message','direct_mention'], function(bot,message) {
+  var google = require('googleapis');
+  var customsearch = google.customsearch('v1');
   var params = {
-    key: process.env.GOOGLE_API_KEY,
+    auth: process.env.GOOGLE_API_KEY,
     cx: process.env.GOOGLE_CX,
     q: message.match[3],
     fields: 'items(link)',
@@ -45,18 +48,21 @@ controller.hears('(image|img)( me)? (.*)',['direct_message','direct_mention'], f
     safe: 'high',
     imgSize: 'medium'
   }
-  scoped_http.create('https://www.googleapis.com')
-    .header('accept', 'application/json')
-    .path('/customsearch/v1')
-    .query(params)
-    .get()(function(err, resp, body) {
-      var result = JSON.parse(body);
-      var images = result.items.map(function(item) {
+
+  customsearch.cse.list(params, function(err, resp) {
+    if (err) {
+      console.log('An error occured', err);
+      return;
+    }
+    // Got the response from custom search
+    if (resp.items && resp.items.length > 0) {
+      var images = resp.items.map(function(item) {
         return item.link;
       });
       var image = images[Math.floor(Math.random()*images.length)];
       bot.reply(message, image);
-    })
+    }
+  });
 });
 
 // Needed to stop Heroku bailing
