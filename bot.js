@@ -48,6 +48,15 @@ controller.hears('(image|img)( me)? (.*)',['direct_message','direct_mention'], f
 });
 
 // harvest
+controller.hears('hv timers ?(on|off|)?', 'direct_message', function(bot,message) {
+  var cmd = message.match[1];
+  var tasks = new Tasks(cmd, '', '');
+
+  tasks.timers(function(msg) {
+    bot.reply(message, msg);
+  });
+});
+
 controller.hears('hv today (.*)', 'direct_message', function(bot,message) {
   var email = message.match[1].match(/\|(.*)>/i)[1].trim().toLowerCase();
   var tasks = new Tasks('', email, '');
