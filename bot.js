@@ -31,12 +31,10 @@ controller.spawn({
   }
 });
 
-// polite
 controller.hears(['hello','hi','yo'],'direct_message', function(bot,message) {
   bot.reply(message,"Hello!");
 });
 
-// image me <string>
 controller.hears('(image|img)( me)? (.*)',['direct_message','direct_mention'], function(bot,message) {
   var ImgSearch = require('./lib/google/imagesearch');
   var query = message.match[3];
@@ -47,13 +45,19 @@ controller.hears('(image|img)( me)? (.*)',['direct_message','direct_mention'], f
   });
 });
 
-// harvest
-controller.hears('hv timers ?(on|off|)?', 'direct_message', function(bot,message) {
+controller.hears('hv timers', 'direct_message', function(bot,message) {
   var cmd = message.match[1];
-  var tasks = new Tasks(cmd, '', '');
+  var tasks = new Tasks('', '', '');
 
-  tasks.timers(function(msg) {
-    bot.reply(message, msg);
+  if (admin_ids.indexOf(message.user) == -1) {
+    bot.reply(message, 'Sorry, permssion denied.');
+    return;
+  }
+
+  bot.startConversation(message,function(err,convo) {
+    tasks.timers(function(msg) {
+      convo.say(msg);
+    });
   });
 });
 
