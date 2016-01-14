@@ -31,10 +31,6 @@ controller.spawn({
   }
 });
 
-controller.hears(['hello','hi','yo'],'direct_message', function(bot,message) {
-  bot.reply(message,"Hello!");
-});
-
 controller.hears('(image|img)( me)? (.*)',['direct_message','direct_mention'], function(bot,message) {
   var ImgSearch = require('./lib/google/imagesearch');
   var query = message.match[3];
@@ -42,6 +38,36 @@ controller.hears('(image|img)( me)? (.*)',['direct_message','direct_mention'], f
   var imgsearch = new ImgSearch(query);
   imgsearch.search(function(msg) {
     bot.reply(message, msg);
+  });
+});
+
+controller.hears('kyan team', 'direct_message', function(bot,message) {
+  bot.api.users.list({},function(err, resp) {
+    if (err) {
+      console.log('An error occured', err);
+      return;
+    }
+
+    var attachments = [];
+    var text = [];
+    for (var i = 0; i < resp.members.length; i++) {
+      var user = resp.members[i];
+      if (user.name != 'slackbot' && user.deleted != true && user.is_bot == false) {
+        text.push('*' + user.id + '* => ' + user.profile.email + ' => <@' + user.id + '>');
+      }
+    }
+    var attachment = {
+      color: '#AFDC19',
+      fields: [],
+      mrkdwn_in: ['text'],
+      text: text.join('\n'),
+    };
+    attachments.push(attachment);
+
+    bot.reply(message, {
+      text: 'Slack Users slackid => email => username',
+      attachments: attachments,
+    });
   });
 });
 
@@ -61,8 +87,9 @@ controller.hears('hv timers', 'direct_message', function(bot,message) {
   });
 });
 
-controller.hears('hv today (.*)', 'direct_message', function(bot,message) {
-  var email = message.match[1].match(/\|(.*)>/i)[1].trim().toLowerCase();
+controller.hears('hv (today|\d{2}-\d{2}-\d{2}) (.*)', 'direct_message', function(bot,message) {
+  var date = message.match[1];
+  var email = message.match[2].match(/\|(.*)>/i)[1].trim().toLowerCase();
 
   if (admin_ids.indexOf(message.user) == -1) {
     bot.reply(message, 'Sorry, permssion denied.');
@@ -70,7 +97,7 @@ controller.hears('hv today (.*)', 'direct_message', function(bot,message) {
   }
 
   var tasks = new Tasks(email);
-  tasks.search(email, function(msg) {
+  tasks.search(date, email, function(msg) {
     bot.reply(message, msg);
   });
 });
@@ -90,13 +117,47 @@ controller.hears('hv prompt (.*)', 'direct_message', function(bot,message) {
   });
 });
 
-controller.hears('hv help', 'direct_message', function(bot,message) {
+controller.hears('hv userids', 'direct_message', function(bot,message) {
+  if (admin_ids.indexOf(message.user) == -1) {
+    bot.reply(message, 'Sorry, permssion denied.');
+    return;
+  }
+
+  var tasks = new Tasks('');
+  tasks.user_ids(function(msg) {
+    bot.reply(message, msg);
+  });
+});
+
+controller.hears('help', 'direct_message', function(bot,message) {
   var attachments = [];
+
+  var attachment = {
+    color: '#33FF00',
+    fields: [],
+    title: 'General',
+    text: 'The commands below allow general interact.',
+    mrkdwn_in: ['fields'],
+  };
+  attachment.fields.push({
+    title: 'img|image (me) query',
+    value: 'Fetches a random image from Google matching the _query_.',
+    short: false,
+  });
+  attachment.fields.push({
+    title: 'kyan team',
+    value: 'Shows all Slack users, slackid => email',
+    short: false,
+  });
+  attachments.push(attachment);
+
   var attachment = {
     color: '#FFCC99',
     fields: [],
+    title: 'Harvest',
+    text: 'The commands below allow you to interact with Harvest.',
+    mrkdwn_in: ['fields'],
   };
-
   attachment.fields.push({
     title: 'hv timers',
     value: 'Shows all the users and whether their timer is running.',
@@ -112,10 +173,15 @@ controller.hears('hv help', 'direct_message', function(bot,message) {
     value: 'Sends a message to @user letting them know their timer is not running.',
     short: false,
   });
+  attachment.fields.push({
+    title: 'hv userids',
+    value: 'Shows all Harvest users, harvestid => email',
+    short: false,
+  });
   attachments.push(attachment);
 
   var _msg = {
-    text: 'Harvest Commands',
+    text: 'Help Menu:',
     attachments: attachments,
   };
 
