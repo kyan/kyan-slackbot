@@ -15,6 +15,9 @@ var redis_storage = require('./lib/storage/redis_storage')({
 // admin ids
 var admin_ids = process.env.SLACK_ADMIN_IDS.split(',');
 
+// Slack harvest mapper
+var slack_harvest_mapper = JSON.parse(process.env.SLACK_HARVEST_MAPPER);
+
 // Bot
 var controller = Botkit.slackbot({
  debug: true,
@@ -89,7 +92,9 @@ controller.hears('hv timers', 'direct_message', function(bot,message) {
 
 controller.hears('hv (today|\d{2}-\d{2}-\d{2}) (.*)', 'direct_message', function(bot,message) {
   var date = message.match[1];
-  var email = message.match[2].match(/\|(.*)>/i)[1].trim().toLowerCase();
+  var username = message.match[2];
+  var userid = username.match(/<@(.*)>/i)[1];
+  var email = slack_harvest_mapper[userid];
 
   if (admin_ids.indexOf(message.user) == -1) {
     bot.reply(message, 'Sorry, permssion denied.');
@@ -136,7 +141,7 @@ controller.hears('help', 'direct_message', function(bot,message) {
     color: '#33FF00',
     fields: [],
     title: 'General',
-    text: 'The commands below allow general interact.',
+    text: 'The commands below allow general interaction.',
     mrkdwn_in: ['fields'],
   };
   attachment.fields.push({
@@ -146,7 +151,7 @@ controller.hears('help', 'direct_message', function(bot,message) {
   });
   attachment.fields.push({
     title: 'kyan team',
-    value: 'Shows all Slack users, slackid => email',
+    value: 'Shows all Slack users, _slackid_ => _email_ => _username_',
     short: false,
   });
   attachments.push(attachment);
@@ -165,13 +170,13 @@ controller.hears('help', 'direct_message', function(bot,message) {
       short: false,
     });
     attachment.fields.push({
-      title: 'hv today <user_email>',
-      value: 'Shows what Harvest <user_email> is working on.',
+      title: 'hv today @user',
+      value: 'Shows what Harvest _@user_ is working on.',
       short: false,
     });
     attachment.fields.push({
       title: 'hv prompt @user',
-      value: 'Sends a message to @user letting them know their timer is not running.',
+      value: 'Sends a message to _@user_ letting them know their timer is not running.',
       short: false,
     });
     attachment.fields.push({
