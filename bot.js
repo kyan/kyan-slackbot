@@ -90,11 +90,11 @@ controller.hears('hv timers', 'direct_message', function(bot,message) {
   });
 });
 
-controller.hears('hv (today|\d{2}-\d{2}-\d{2}) (.*)', 'direct_message', function(bot,message) {
-  var date = message.match[1];
+controller.hears('hv (today|\\d{1,2}-\\d{1,2}-\\d{4}) (.*)', 'direct_message', function(bot,message) {
   var username = message.match[2];
   var userid = username.match(/<@(.*)>/i)[1];
   var email = slack_harvest_mapper[userid];
+  var datestr = message.match[1];
 
   if (admin_ids.indexOf(message.user) == -1) {
     bot.reply(message, 'Sorry, permssion denied.');
@@ -102,7 +102,7 @@ controller.hears('hv (today|\d{2}-\d{2}-\d{2}) (.*)', 'direct_message', function
   }
 
   var tasks = new Tasks(email);
-  tasks.search(date, email, function(msg) {
+  tasks.search(datestr, email, function(msg) {
     bot.reply(message, msg);
   });
 });
@@ -170,7 +170,7 @@ controller.hears('help', 'direct_message', function(bot,message) {
       short: false,
     });
     attachment.fields.push({
-      title: 'hv today @user',
+      title: 'hv today|dd-mm-yyyy @user',
       value: 'Shows what Harvest _@user_ is working on.',
       short: false,
     });
