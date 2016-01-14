@@ -151,34 +151,36 @@ controller.hears('help', 'direct_message', function(bot,message) {
   });
   attachments.push(attachment);
 
-  var attachment = {
-    color: '#FFCC99',
-    fields: [],
-    title: 'Harvest',
-    text: 'The commands below allow you to interact with Harvest.',
-    mrkdwn_in: ['fields'],
-  };
-  attachment.fields.push({
-    title: 'hv timers',
-    value: 'Shows all the users and whether their timer is running.',
-    short: false,
-  });
-  attachment.fields.push({
-    title: 'hv today <user_email>',
-    value: 'Shows what Harvest <user_email> is working on.',
-    short: false,
-  });
-  attachment.fields.push({
-    title: 'hv prompt @user',
-    value: 'Sends a message to @user letting them know their timer is not running.',
-    short: false,
-  });
-  attachment.fields.push({
-    title: 'hv userids',
-    value: 'Shows all Harvest users, harvestid => email',
-    short: false,
-  });
-  attachments.push(attachment);
+  if (admin_ids.indexOf(message.user) != -1) {
+    var attachment = {
+      color: '#FFCC99',
+      fields: [],
+      title: 'Harvest',
+      text: 'The commands below allow you to interact with Harvest.',
+      mrkdwn_in: ['fields'],
+    };
+    attachment.fields.push({
+      title: 'hv timers',
+      value: 'Shows all the users and whether their timer is running.',
+      short: false,
+    });
+    attachment.fields.push({
+      title: 'hv today <user_email>',
+      value: 'Shows what Harvest <user_email> is working on.',
+      short: false,
+    });
+    attachment.fields.push({
+      title: 'hv prompt @user',
+      value: 'Sends a message to @user letting them know their timer is not running.',
+      short: false,
+    });
+    attachment.fields.push({
+      title: 'hv userids',
+      value: 'Shows all Harvest users, harvestid => email',
+      short: false,
+    });
+    attachments.push(attachment);
+  }
 
   var _msg = {
     text: 'Help Menu:',
