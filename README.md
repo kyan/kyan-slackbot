@@ -29,3 +29,13 @@ merged into the ```master``` branch.
 ## Tests
 
 Work in progress
+
+
+## Options
+
+You can see what the bot can do once running useing the command:
+
+```
+help
+
+```
