@@ -74,7 +74,9 @@ controller.hears('kyan team', 'direct_message', function(bot,message) {
   });
 });
 
-controller.hears('hv timers', 'direct_message', function(bot,message) {
+controller.hears('hv (timers|hours)', 'direct_message', function(bot,message) {
+  var cmd = message.match[1];
+
   if (admin_ids.indexOf(message.user) == -1) {
     bot.reply(message, 'Sorry, permssion denied.');
     return;
@@ -82,21 +84,7 @@ controller.hears('hv timers', 'direct_message', function(bot,message) {
 
   var tasks = new Tasks('');
   bot.startConversation(message,function(err,convo) {
-    tasks.timers(function(msg) {
-      convo.say(msg);
-    });
-  });
-});
-
-controller.hears('hv hours', 'direct_message', function(bot,message) {
-  if (admin_ids.indexOf(message.user) == -1) {
-    bot.reply(message, 'Sorry, permssion denied.');
-    return;
-  }
-
-  var tasks = new Tasks('');
-  bot.startConversation(message,function(err,convo) {
-    tasks.hours(function(msg) {
+    tasks[cmd](function(msg) {
       convo.say(msg);
     });
   });
