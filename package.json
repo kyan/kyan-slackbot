@@ -1,6 +1,7 @@
 {
   "scripts": {
-    "start": "node bot.js"
+    "start": "node bot.js",
+    "debug": "node --debug bot.js"
   },
   "dependencies": {
     "botkit": "0.0.5",
@@ -8,6 +9,9 @@
     "googleapis": "~2.1",
     "harvest": "~0.1",
     "underscore": "~1.8"
+  },
+  "devDependencies": {
+    "node-inspector": "~0.1"
   },
   "engines": {
     "node": "5.3.0"

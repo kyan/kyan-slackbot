@@ -26,10 +26,31 @@ $ heroku local web
 The app currently runs on Heroku. Deployment is automatic when something is
 merged into the ```master``` branch.
 
-## Tests
+### Debugging
+
+You can debug the app whilst it's running. This is really helpful and uses the
+Chrome devtools. You just need to start the app in a slightly different way.
+
+Debugging uses the `node-inspector`. You first start the app with:
+
+```
+$ heroku local debug
+```
+
+In a seperate terminal window you should run:
+
+```
+$ node-inspector
+Node Inspector v0.12.5
+Visit http://127.0.0.1:8080/?ws=127.0.0.1:8080&port=5858 to start debugging.
+```
+
+If you visit the url in Chrome as requested you will see the devtools open and
+ready to go with your app loaded. You can add break points etc. It's really smart.
+
+### Tests
 
 Work in progress
-
 
 ## Options
 
