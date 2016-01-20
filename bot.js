@@ -125,7 +125,7 @@ controller.hears('hv timers', 'direct_message', function(bot,message) {
   });
 });
 
-controller.hears('hv (today|\\d{1,2}-\\d{1,2}-\\d{4}) (.*)', 'direct_message', function(bot,message) {
+controller.hears('hv (today|last|\\d{1,2}-\\d{1,2}-\\d{4}) (.*)', 'direct_message', function(bot,message) {
   if (!permissions.admin_reply(bot,message)) { return };
   var username = message.match[2];
   var userid = username.match(/<@(.*)>/i)[1];
@@ -194,18 +194,13 @@ controller.hears('help', 'direct_message', function(bot,message) {
       short: false,
     });
     attachment.fields.push({
-      title: 'hv today|dd-mm-yyyy @user',
+      title: 'hv today|last|dd-mm-yyyy @user',
       value: 'Shows what Harvest _@user_ is working on.',
       short: false,
     });
     attachment.fields.push({
-      title: 'hv hours',
-      value: 'Shows total hours for the previous working day only showing < '+process.env.HARVEST_LOW_HOURS+' hours.',
-      short: false,
-    });
-    attachment.fields.push({
-      title: 'hv hours all',
-      value: 'Shows total hours for the previous working day',
+      title: 'hv hours (all)',
+      value: 'Shows total hours for the previous working day only showing < '+process.env.HARVEST_LOW_HOURS+' hours. If *all* is used all users are shown',
       short: false,
     });
     attachment.fields.push({
