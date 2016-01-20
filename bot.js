@@ -7,6 +7,12 @@ if (!process.env.SLACK_TOKEN || !process.env.REDIS_URL || !process.env.PORT || !
   process.exit(1);
 }
 
+// check for additional Harvest ENV's
+if (!process.env.HARVEST_LOW_HOURS) {
+  console.log('Harvest Error: Specify HARVEST_LOW_HOURS in environment');
+  process.exit(1);
+}
+
 // Configure storage
 var redis_storage = require('./lib/storage/redis_storage')({
   url: process.env.REDIS_URL
@@ -91,13 +97,29 @@ controller.hears('kyan team', 'direct_message', function(bot,message) {
   });
 });
 
-controller.hears('hv (timers|hours)', 'direct_message', function(bot,message) {
+controller.hears('hv hours( all)?', 'direct_message', function(bot,message) {
   if (!permissions.admin_reply(bot,message)) { return };
-  var cmd = message.match[1];
+  var filter = message.match[1];
+  var tasks = new Tasks('');
+  var opts = {};
+
+  if (filter == undefined) {
+    opts.min_hours = process.env.HARVEST_LOW_HOURS;
+  }
+
+  bot.startConversation(message,function(err,convo) {
+    tasks.hours(opts, function(msg) {
+      convo.say(msg);
+    });
+  });
+});
+
+controller.hears('hv timers', 'direct_message', function(bot,message) {
+  if (!permissions.admin_reply(bot,message)) { return };
   var tasks = new Tasks('');
 
   bot.startConversation(message,function(err,convo) {
-    tasks[cmd](function(msg) {
+    tasks.timers(function(msg) {
       convo.say(msg);
     });
   });
@@ -178,6 +200,11 @@ controller.hears('help', 'direct_message', function(bot,message) {
     });
     attachment.fields.push({
       title: 'hv hours',
+      value: 'Shows total hours for the previous working day only showing < '+process.env.HARVEST_LOW_HOURS+' hours.',
+      short: false,
+    });
+    attachment.fields.push({
+      title: 'hv hours all',
       value: 'Shows total hours for the previous working day',
       short: false,
     });
