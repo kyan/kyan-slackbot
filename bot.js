@@ -12,8 +12,25 @@ var redis_storage = require('./lib/storage/redis_storage')({
   url: process.env.REDIS_URL
 });
 
-// admin ids
-var admin_ids = process.env.SLACK_ADMIN_IDS.split(',');
+// permissions
+var Permission = function(ids) {
+  var admin_ids = ids.split(',');
+
+  this.admin_reply = function(bot, message, reply) {
+    if (admin_ids.indexOf(message.user) == -1) {
+      bot.reply(message, 'Sorry, permssion denied.');
+      return false;
+    }
+    return true;
+  }
+  this.admin = function(bot, message, reply) {
+    if (admin_ids.indexOf(message.user) == -1) {
+      return false;
+    }
+    return true;
+  }
+};
+var permissions = new Permission(process.env.SLACK_ADMIN_IDS);
 
 // Slack harvest mapper
 var slack_harvest_mapper = JSON.parse(process.env.SLACK_HARVEST_MAPPER);
@@ -75,14 +92,10 @@ controller.hears('kyan team', 'direct_message', function(bot,message) {
 });
 
 controller.hears('hv (timers|hours)', 'direct_message', function(bot,message) {
+  if (!permissions.admin_reply(bot,message)) { return };
   var cmd = message.match[1];
-
-  if (admin_ids.indexOf(message.user) == -1) {
-    bot.reply(message, 'Sorry, permssion denied.');
-    return;
-  }
-
   var tasks = new Tasks('');
+
   bot.startConversation(message,function(err,convo) {
     tasks[cmd](function(msg) {
       convo.say(msg);
@@ -91,44 +104,33 @@ controller.hears('hv (timers|hours)', 'direct_message', function(bot,message) {
 });
 
 controller.hears('hv (today|\\d{1,2}-\\d{1,2}-\\d{4}) (.*)', 'direct_message', function(bot,message) {
+  if (!permissions.admin_reply(bot,message)) { return };
   var username = message.match[2];
   var userid = username.match(/<@(.*)>/i)[1];
   var email = slack_harvest_mapper[userid];
   var datestr = message.match[1];
-
-  if (admin_ids.indexOf(message.user) == -1) {
-    bot.reply(message, 'Sorry, permssion denied.');
-    return;
-  }
-
   var tasks = new Tasks(email);
+
   tasks.search(datestr, email, function(msg) {
     bot.reply(message, msg);
   });
 });
 
 controller.hears('hv prompt (.*)', 'direct_message', function(bot,message) {
+  if (!permissions.admin_reply(bot,message)) { return };
   var username = message.match[1];
   var userid = username.match(/<@(.*)>/i)[1];
-
-  if (admin_ids.indexOf(message.user) == -1) {
-    bot.reply(message, 'Sorry, permssion denied.');
-    return;
-  }
-
   var tasks = new Tasks('');
+
   tasks.prompt(userid, bot, function(msg) {
     bot.reply(message, username + ' has been gently prompted.');
   });
 });
 
 controller.hears('hv userids', 'direct_message', function(bot,message) {
-  if (admin_ids.indexOf(message.user) == -1) {
-    bot.reply(message, 'Sorry, permssion denied.');
-    return;
-  }
-
+  if (!permissions.admin_reply(bot,message)) { return };
   var tasks = new Tasks('');
+
   tasks.user_ids(function(msg) {
     bot.reply(message, msg);
   });
@@ -156,7 +158,7 @@ controller.hears('help', 'direct_message', function(bot,message) {
   });
   attachments.push(attachment);
 
-  if (admin_ids.indexOf(message.user) != -1) {
+  if (permissions.admin(bot,message)) {
     var attachment = {
       color: '#FFCC99',
       fields: [],
