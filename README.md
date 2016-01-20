@@ -50,11 +50,12 @@ ready to go with your app loaded. You can add break points etc. It's really smar
 
 ### Tests
 
-Work in progress
+Work in progress. Basically I'm new to node so really need to understand how
+to write some tests.
 
 ## Options
 
-You can see what the bot can do once running useing the command:
+You can see what the bot can do once running using the command:
 
 ```
 help
