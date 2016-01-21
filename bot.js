@@ -144,8 +144,15 @@ controller.hears('hv prompt (.*)', 'direct_message', function(bot,message) {
   var userid = username.match(/<@(.*)>/i)[1];
   var tasks = new Tasks('');
 
-  tasks.prompt(userid, bot, function(msg) {
-    bot.reply(message, username + ' has been gently prompted.');
+  tasks.prompt(userid, bot, function(_opts) {
+    bot.api.chat.postMessage(_opts ,function(err,response) {
+      if (err) {
+        console.log('An error occured', err);
+        return;
+      }
+
+      bot.reply(message, username + ' has been gently prompted.');
+    });
   });
 });
 
