@@ -1,7 +1,7 @@
 redis = require('redis') #https://github.com/NodeRedis/node_redis
 
 module.exports = (config) ->
-  config = config || {};
+  config = config || {}
   config.namespace = config.namespace or 'botkit:store'
 
   storage = {}
@@ -31,7 +31,7 @@ module.exports = (config) ->
             item = parsed
             array.push(parsed)
 
-          cb(err, options and options.type is 'object' ? res : array);
+          cb(err, options and options.type is 'object' ? res : array)
       allById: (cb) ->
         this.all cb, {type: 'object'}
     )(method)

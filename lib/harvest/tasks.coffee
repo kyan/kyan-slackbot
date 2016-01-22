@@ -8,15 +8,14 @@ _ = require('underscore')
 
 module.exports = ->
   this.search = (cmd, email, callback) ->
-    self = this
     opts = {}
 
-    self.user email, (user) ->
+    this.user email, (user) =>
       switch cmd
         when 'today'
           break
         when 'last'
-          opts.date = self._yesterday_as_date()
+          opts.date = this._yesterday_as_date()
           break
         else
           parts = cmd.split('-')
@@ -27,11 +26,11 @@ module.exports = ->
             if invalidTime is invalidTime
               opts.date = date
 
-      self.daily user, opts, (_u, _tasks) ->
+      this.daily user, opts, (_u, _tasks) =>
         sum = _.reduce(_tasks, ((m,n) -> return m + n.hours), 0)
         attachments = []
         attachment =
-          pretext: "Total hours: *#{self._decical_to_hours(sum)}*",
+          pretext: "Total hours: *#{this._decical_to_hours(sum)}*",
           color: '#FFCC99',
           fields: [],
           mrkdwn_in: ['fields', 'pretext'],
@@ -39,23 +38,21 @@ module.exports = ->
         if _tasks.length > 0
           for _task in _tasks
             attachment.fields.push
-              value: self._format_task_entry(_task),
+              value: this._format_task_entry(_task),
               short: false,
         else
           attachment.fields.push
             value: 'No information found!',
             short: false,
-        attachments.push(attachment);
+        attachments.push attachment
 
         callback(
-          text: "*#{self._fullname(_u)} (#{cmd})*",
+          text: "*#{this._fullname(_u)} (#{cmd})*",
           attachments: attachments,
         )
 
-  this.user = (email, callback) ->
-    self = this
-
-    self.users (_peoples) ->
+  this.user = (email, callback) =>
+    this.users (_peoples) ->
       user
 
       for _person in _peoples
@@ -66,20 +63,16 @@ module.exports = ->
       return callback('Oops, user not found!') if user is undefined
 
   this.users = (callback) ->
-    self = this
-
     People = harvest.People
     People.list {}, (err, peoples) ->
       console.log('An error occured', err) if err
       callback(peoples)
 
-  this.user_ids = (callback) ->
-    self = this
-
-    self.users (_peoples) ->
+  this.user_ids = (callback) =>
+    this.users (_peoples) ->
       attachments = []
       text = []
-      _.each _peoples, (_person) ->
+      for _person in _peoples
         user = _person.user
         if user.is_active
           text.push("*#{user.id}* => #{user.email}")
@@ -94,11 +87,10 @@ module.exports = ->
         text: 'Harvest harvestid => email',
         attachments: attachments,
 
-  this.hours = (opts, callback) ->
-    self = this
+  this.hours = (opts, callback) =>
     global_opts = opts
 
-    self.users (_peoples) ->
+    this.users (_peoples) =>
       hours_cnt = []
       hours_str = []
       peoples = _.filter _peoples, (u) ->
@@ -106,13 +98,13 @@ module.exports = ->
 
       for _person in peoples
         user = _person.user
-        yesterday = self._yesterday_as_str()
+        yesterday = this._yesterday_as_str()
         opts = from: yesterday, to: yesterday
         opts.user_id = user.id
 
-        self.entries_per_user user, opts, (_user, _hours) ->
-          hours_cnt.push(_hours);
-          hours_str.push("*#{_hours.toFixed(2)}* : #{self._fullname(_user)}")
+        this.entries_per_user user, opts, (_user, _hours) =>
+          hours_cnt.push(_hours)
+          hours_str.push("*#{_hours.toFixed(2)}* : #{this._fullname(_user)}")
 
           if global_opts.min_hours and _hours >= parseInt(Number(global_opts.min_hours))
             hours_str.pop()
@@ -149,44 +141,40 @@ module.exports = ->
       sum = _.reduce(hours, ((m,n) -> m + n), 0)
       callback(user, sum)
 
-  this.timers = (callback) ->
-    self = this
+  this.timers = (callback) =>
     opts = running: false
 
-    self.users (_peoples) ->
-      _.each _peoples, (_person) ->
+    this.users (_peoples) =>
+      for _person in _peoples
         user = _person.user
 
         if user.is_active and not user.is_admin
-          self.daily user, opts, (_task) ->
-            callback(self._format_task_entry(_task))
+          this.daily user, opts, (_task) =>
+            callback(this._format_task_entry(_task))
 
-  this.daily = (user, opts, callback) ->
-    self = this
+  this.daily = (user, opts, callback) =>
     harvest_opts = of_user: user.id
     harvest_opts.date = opts.date if opts.date
 
     TimeTracking = harvest.TimeTracking
-    TimeTracking.daily harvest_opts, (err, tasks) ->
+    TimeTracking.daily harvest_opts, (err, tasks) =>
       return console.log('An error occured', err) if err
 
       entries = tasks.day_entries
-      task = self._currently_running_task(entries)
+      task = this._currently_running_task(entries)
 
       if opts.hasOwnProperty('running')
-        fn = self._fullname(user)
+        fn = this._fullname(user)
 
         if task is undefined
           task = fullname: fn, not_running: true
         else
-          task.fullname = self._fullname(user)
+          task.fullname = this._fullname(user)
         return callback(task)
 
       callback(user, entries)
 
   this.prompt = (userid, bot, callback) ->
-    self = this
-
     bot.api.im.open { user: userid }, (err,response) ->
       channelid = response.channel.id
       text = "Hey. It looks like you're not recording any hours at the moment?"
