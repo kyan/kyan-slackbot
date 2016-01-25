@@ -24,7 +24,7 @@ $ heroku local web
 ## Deployment
 
 The app currently runs on Heroku. Deployment is automatic when something is
-merged into the ```master``` branch.
+merged into the ```master``` branch and the tests pass.
 
 ### Debugging
 
@@ -50,7 +50,7 @@ ready to go with your app loaded. You can add break points etc. It's really smar
 
 ### Tests
 
-You can run the test suite using:
+You can run the test suite manually using:
 
 ```
 $ npm test
