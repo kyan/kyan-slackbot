@@ -50,8 +50,11 @@ ready to go with your app loaded. You can add break points etc. It's really smar
 
 ### Tests
 
-Work in progress. Basically I'm new to node so really need to understand how
-to write some tests.
+You can run the test suite using:
+
+```
+$ npm test
+```
 
 ## Options
 
