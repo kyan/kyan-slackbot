@@ -3,7 +3,7 @@ sinon = require "sinon"
 sinonChai = require "sinon-chai"
 expect = chai.expect
 chai.use sinonChai
-img_search = require '../lib/google/Imagesearch'
+img_search = require '../lib/google/imagesearch'
 
 process.env.NODE_ENV = 'test'
 
