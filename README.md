@@ -24,7 +24,7 @@ $ heroku local web
 ## Deployment
 
 The app currently runs on Heroku. Deployment is automatic when something is
-merged into the ```master``` branch and the tests pass.
+merged into the ```master``` branch and the tests pass in travis.
 
 ### Debugging
 
