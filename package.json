@@ -2,7 +2,8 @@
   "version": "1.0.0",
   "scripts": {
     "start": "coffee bot.coffee",
-    "debug": "coffee --debug bot.coffee"
+    "debug": "coffee --debug bot.coffee",
+    "test": "mocha --require coffee-script/register --compilers coffee:coffee-script --no-colors"
   },
   "dependencies": {
     "coffee-script": "1.10",
@@ -13,7 +14,11 @@
     "underscore": "~1.8"
   },
   "devDependencies": {
-    "node-inspector": "0.12"
+    "node-inspector": "0.12",
+    "mocha": "2.3",
+    "chai": "2.1",
+    "sinon": "1.17",
+    "sinon-chai": "2.8"
   },
   "engines": {
     "node": "5.3.0"
