@@ -2,7 +2,7 @@
   "version": "1.0.0",
   "scripts": {
     "start": "coffee bot.coffee",
-    "debug": "coffee --debug bot.coffee",
+    "debug": "coffee --nodejs --debug bot.coffee",
     "test": "mocha --require coffee-script/register --compilers coffee:coffee-script --no-colors"
   },
   "dependencies": {
