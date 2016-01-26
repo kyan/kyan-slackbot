@@ -1,5 +1,7 @@
 # Kyan Slackbot
 
+[![Build Status](https://travis-ci.org/kyan/kyan-slackbot.svg?branch=master)](https://travis-ci.org/kyan/kyan-slackbot)
+
 This is the office SlackBot.
 
 ## Development
