@@ -11,10 +11,6 @@ if not process.env.HARVEST_LOW_HOURS
   console.log('Harvest Error: Specify HARVEST_LOW_HOURS in environment')
   process.exit(1)
 
-# Configure storage
-redis_storage = require('./lib/storage/redis_storage')
-  url: process.env.REDIS_URL
-
 # permissions
 Permission = (ids) ->
   admin_ids = ids.split(',')
@@ -33,11 +29,16 @@ permissions = new Permission(process.env.SLACK_ADMIN_IDS)
 # Slack harvest mapper
 slack_harvest_mapper = JSON.parse process.env.SLACK_HARVEST_MAPPER
 
+# Configure storage
+# Switched OFF as NOT used currently
+#redis_storage = require('./lib/storage/redis_storage')
+#  url: process.env.REDIS_URL
+
 # Bot
 controller = Botkit.slackbot
   debug: true,
   log: true,
-  storage: redis_storage
+#  storage: redis_storage
 
 # Chat
 controller.spawn(token: process.env.SLACK_TOKEN).startRTM (err)->
