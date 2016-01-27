@@ -60,3 +60,33 @@ describe 'Tasks', ->
 
       expect(task._format_task_entry(entry)).to
         .equal(':ZZZ: : *John Doe*')
+
+  describe '#_currently_running_task()', ->
+    it 'should return the currently running task', ->
+      e1 = name: 'e1'
+      e2 = name: 'e2', timer_started_at: true
+      e3 = name: 'e3'
+      entries = [ e1, e2, e3 ]
+      expect(task._currently_running_task(entries)).to.equal(e2)
+
+  describe '#_yesterday_as_date()', ->
+    it 'should return fri as date when mon', ->
+      date = new Date('Mon, 13 Oct 2014 10:13:00 GMT')
+      expect(task._yesterday_as_date(date).toUTCString()).to
+        .equal('Fri, 10 Oct 2014 10:13:00 GMT')
+
+    it 'should return tue as date when wed', ->
+      date = new Date('Wed, 15 Oct 2014 10:13:00 GMT')
+      expect(task._yesterday_as_date(date).toUTCString()).to
+        .equal('Tue, 14 Oct 2014 10:13:00 GMT')
+
+  describe '#_yesterday_as_str()', ->
+    it 'should return fri as date when mon', ->
+      date = new Date('Mon, 13 Oct 2014 10:13:00 GMT')
+      expect(task._yesterday_as_str(date)).to
+        .equal('20141010')
+
+    it 'should return tue as date when wed', ->
+      date = new Date('Wed, 15 Oct 2014 10:13:00 GMT')
+      expect(task._yesterday_as_str(date)).to
+        .equal('20141014')

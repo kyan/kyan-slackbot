@@ -15,7 +15,8 @@ module.exports = ->
         when 'today'
           break
         when 'last'
-          opts.date = this._yesterday_as_date()
+          date = new Date()
+          opts.date = this._yesterday_as_date(date)
           break
         else
           parts = cmd.split('-')
@@ -98,7 +99,8 @@ module.exports = ->
 
       for _person in peoples
         user = _person.user
-        yesterday = this._yesterday_as_str()
+        date = new Date()
+        yesterday = this._yesterday_as_str(date)
         opts = from: yesterday, to: yesterday
         opts.user_id = user.id
 
@@ -215,13 +217,12 @@ module.exports = ->
   this._currently_running_task = (entries) ->
     _.find entries, (e) -> e.timer_started_at
 
-  this._yesterday_as_date = ->
-    date = new Date()
-    daysback = if date.getDay() is 1 then 2 else 1
+  this._yesterday_as_date = (date) ->
+    daysback = if date.getDay() is 1 then 3 else 1
     new Date(date.setDate(date.getDate() - daysback))
 
-  this._yesterday_as_str = ->
-    this._yesterday_as_date().toISOString()
+  this._yesterday_as_str = (date) ->
+    this._yesterday_as_date(date).toISOString()
       .split('T')[0]
       .replace(/-/g, '')
   return
