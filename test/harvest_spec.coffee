@@ -90,3 +90,25 @@ describe 'Tasks', ->
       date = new Date('Wed, 15 Oct 2014 10:13:00 GMT')
       expect(task._yesterday_as_str(date)).to
         .equal('20141014')
+
+  describe '#prompt()', ->
+    it 'should prompt the user', ->
+      response =
+        channel:
+          id: 'channel1'
+      userid = 'x1234'
+      bot =
+        api:
+          im:
+            open: (ops, cb) ->
+              return cb null, response
+      callback = sinon.spy()
+      task.prompt(userid, bot, callback)
+
+      expect(callback.called).to.be.true
+      expect(callback).to.have.been.calledWith(
+        channel: "channel1"
+        icon_emoji: ":sadsmile:"
+        text: "Hey. It looks like you're not recording any hours at the moment?"
+        username: "HarvestBot"
+      )
