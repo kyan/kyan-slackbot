@@ -1,12 +1,13 @@
 Harvest = require('harvest')
-harvest = new Harvest(
-  subdomain: process.env.HARVEST_SUBDOMAIN,
-  email: process.env.HARVEST_EMAIL,
-  password: process.env.HARVEST_PASSWORD
-)
 _ = require('underscore')
 
 module.exports = ->
+  this.harvest = new Harvest(
+    subdomain: process.env.HARVEST_SUBDOMAIN,
+    email: process.env.HARVEST_EMAIL,
+    password: process.env.HARVEST_PASSWORD
+  )
+
   this.search = (cmd, email, callback) ->
     opts = {}
 
@@ -64,7 +65,7 @@ module.exports = ->
       return callback('Oops, user not found!') if user is undefined
 
   this.users = (callback) ->
-    People = harvest.People
+    People = this.harvest.People
     People.list {}, (err, peoples) ->
       console.log('An error occured', err) if err
       callback(peoples)
@@ -137,7 +138,7 @@ module.exports = ->
               attachments: attachments
 
   this.entries_per_user = (user, opts, callback) ->
-    Reports = harvest.Reports
+    Reports = this.harvest.Reports
     Reports.timeEntriesByUser opts, (err, _data) ->
       hours = _data.map((item) -> item.day_entry.hours)
       sum = _.reduce(hours, ((m,n) -> m + n), 0)
@@ -158,7 +159,7 @@ module.exports = ->
     harvest_opts = of_user: user.id
     harvest_opts.date = opts.date if opts.date
 
-    TimeTracking = harvest.TimeTracking
+    TimeTracking = this.harvest.TimeTracking
     TimeTracking.daily harvest_opts, (err, tasks) =>
       return console.log('An error occured', err) if err
 

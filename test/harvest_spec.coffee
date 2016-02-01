@@ -112,3 +112,22 @@ describe 'Tasks', ->
         text: "Hey. It looks like you're not recording any hours at the moment?"
         username: "HarvestBot"
       )
+
+  describe '#daily()', ->
+    it 'should return a tasks when opt[running] pass in', ->
+      e1 = name: 'e1'
+      e2 = name: 'e2', timer_started_at: true
+      e3 = name: 'e3'
+      user = id: 'abc123', first_name: 'John', last_name: 'Doe'
+      opts = { running: true }
+      tasks =
+        tasks:
+          day_entries: [ e1, e2, e3 ]
+      task.harvest =
+        TimeTracking:
+          daily: (h_opts, cb) ->
+              return cb null, tasks
+      callback = sinon.spy()
+      task.daily(user, opts, callback)
+
+      expect(callback.called).to.be.true

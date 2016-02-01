@@ -6,8 +6,8 @@ This is the office SlackBot.
 
 ## Development
 
-If you want to add a new feature, you will need to create a new branch which
-will a new PR can be created against on Github. You can run the bot locally
+If you want to add a new feature, you will need to create a new branch with
+which a new PR can be created against on Github. You can run the bot locally
 by changing into the route of the project and:
 
 ```
