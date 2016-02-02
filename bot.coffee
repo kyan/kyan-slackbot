@@ -84,7 +84,7 @@ controller.hears 'hv hours( all)?', 'direct_message', (bot,message) ->
   bot.startConversation message, (err,convo) ->
     tasks.hours opts, (msg) -> convo.say msg
 
-controller.hears 'hv timers', 'direct_message', (bot,message) ->
+controller.hears 'hv (t|timers)', 'direct_message', (bot,message) ->
   return if not permissions.admin_reply bot, message
   tasks = new Tasks('')
 
@@ -101,7 +101,7 @@ controller.hears 'hv (today|last|\\d{1,2}-\\d{1,2}-\\d{4}) (.*)', 'direct_messag
 
   tasks.search datestr, email, (msg) -> bot.reply message, msg
 
-controller.hears 'hv prompt (.*)', 'direct_message', (bot,message) ->
+controller.hears 'hv (p|prompt) (.*)', 'direct_message', (bot,message) ->
   return if not permissions.admin_reply bot, message
   username = message.match[1]
   userid = username.match(/<@(.*)>/i)[1]
