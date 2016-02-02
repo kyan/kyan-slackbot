@@ -145,7 +145,7 @@ controller.hears 'help', 'direct_message', (bot,message) ->
       text: 'The commands below allow you to interact with Harvest.',
       mrkdwn_in: ['fields']
     attachment.fields.push
-      title: 'hv timers',
+      title: 'hv timers|t',
       value: 'Shows all the users and whether their timer is running.',
       short: false
     attachment.fields.push
@@ -157,7 +157,7 @@ controller.hears 'help', 'direct_message', (bot,message) ->
       value: "Shows total hours for the previous working day only showing < #{process.env.HARVEST_LOW_HOURS} hours. If *all* is used all users are shown",
       short: false
     attachment.fields.push
-      title: 'hv prompt @user',
+      title: 'hv prompt|p @user',
       value: 'Sends a message to _@user_ letting them know their timer is not running.',
       short: false
     attachment.fields.push
