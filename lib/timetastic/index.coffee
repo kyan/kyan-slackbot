@@ -24,7 +24,6 @@ class Timetastic
         users = body.holidays.map (user) ->
           "*#{user.userName}* #{user.leaveType}"
         attachments = []
-        text = []
         status = ":party: Everyone is here #{cmd}! :party:"
 
         attachments.push
