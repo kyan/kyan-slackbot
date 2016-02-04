@@ -44,6 +44,12 @@ controller = Botkit.slackbot
 controller.spawn(token: process.env.SLACK_TOKEN).startRTM (err)->
   throw new Error(err) if err
 
+controller.hears 'tt (today|tomorrow)', ['direct_message','direct_mention'], (bot,message) ->
+  Timetastic = require('./lib/timetastic/index')
+  cmd = message.match[1]
+  tt = new Timetastic()
+  tt.away { when: cmd }, (msg) -> bot.reply message, msg
+
 controller.hears '(image|img)( me)? (.*)',['direct_message','direct_mention'], (bot,message) ->
   ImgSearch = require('./lib/google/imagesearch')
   query = message.match[3]
@@ -134,6 +140,18 @@ controller.hears 'help', 'direct_message', (bot,message) ->
   attachment.fields.push
     title: 'kyan team',
     value: 'Shows all Slack users, _slackid_ => _email_ => _username_',
+    short: false
+  attachments.push attachment
+
+  attachment =
+    color: '#00c2ff',
+    fields: [],
+    title: 'Timetastic',
+    text: 'The commands below allow you to interact with Timetastic.',
+    mrkdwn_in: ['fields']
+  attachment.fields.push
+    title: 'tt today|tomorrow',
+    value: 'Shows who is in on the specified day.',
     short: false
   attachments.push attachment
 
