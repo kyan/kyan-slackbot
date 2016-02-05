@@ -110,7 +110,7 @@ controller.hears 'hv (today|last|\\d{1,2}-\\d{1,2}-\\d{4}) (.*)', 'direct_messag
 controller.hears 'hv (p|prompt) (.*)', 'direct_message', (bot,message) ->
   return if not permissions.admin_reply bot, message
   username = message.match[2]
-  userid = username.match(/<@(.*)>/i)[2]
+  userid = username.match(/<@(.*)>/i)[1]
   tasks = new Tasks('')
 
   tasks.prompt userid, bot, (_opts) ->
