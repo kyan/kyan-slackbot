@@ -65,9 +65,11 @@ class Timetastic
     else
       to = new Date(user.endDate)
       remaining = Math.round(@days_between(today, to))
-      remaining = 'no' if remaining is 0
-      pluralize = if remaining is 1 then 'day' else 'days'
-      extended += "#{remaining} #{pluralize} left"
+      if remaining is 0
+        extended = 'last day'
+      else
+        pluralize = if remaining is 1 then 'day' else 'days'
+        extended += "#{remaining} #{pluralize} to go"
 
     "*#{user.userName}* _#{user.leaveType}, #{extended}_"
 
