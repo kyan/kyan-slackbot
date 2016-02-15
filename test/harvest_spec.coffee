@@ -145,3 +145,16 @@ describe 'Tasks', ->
       task._is_user_online user, bot, (err, result) ->
         expect(result).to.be.true
         done()
+
+    it 'should return false if the user is inactive in Slack', (done) ->
+      bot =
+        api:
+          users:
+            getPresence: (ops, callback) ->
+              callback(null, { presence: 'inactive' })
+      user =
+        first_name: 'John'
+        last_name: 'Doe'
+      task._is_user_online user, bot, (err, result) ->
+        expect(result).to.be.false
+        done()
