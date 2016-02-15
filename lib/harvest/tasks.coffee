@@ -197,6 +197,11 @@ module.exports = ->
 
       callback(opts)
 
+  this._is_user_online = (user, bot, callback) ->
+    bot.api.users.getPresence user, (err, response) ->
+      result = !err && response.presence == 'active'
+      callback(err, result)
+
   this._is_user_on_holiday = (user) ->
     tt.away { when: 'today' }, (msg) ->
       # TODO

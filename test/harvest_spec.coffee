@@ -131,3 +131,17 @@ describe 'Tasks', ->
       task.daily(user, opts, callback)
 
       expect(callback.called).to.be.true
+
+  describe '#_is_user_online', ->
+    it 'should return true if the user is active in Slack', (done) ->
+      bot =
+        api:
+          users:
+            getPresence: (ops, callback) ->
+              callback(null, { presence: 'active' })
+      user =
+        first_name: 'John'
+        last_name: 'Doe'
+      task._is_user_online user, bot, (err, result) ->
+        expect(result).to.be.true
+        done()
