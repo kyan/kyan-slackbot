@@ -3,6 +3,10 @@ req = require('request')
 class Timetastic
   request: req
 
+  users_away_today: (callback) ->
+    date_string = @date_plus_as_string(new Date(), 0)
+    find_holidays_on(date_string, callback)
+
   away: (opt, callback) ->
     cmd = opt.when or 'today'
     amt = 0
@@ -10,19 +14,8 @@ class Timetastic
     today = new Date()
     date_string = @date_plus_as_string(today, amt)
 
-    request_options =
-      url: 'https://app.timetastic.co.uk/api/holidays'
-      json: true
-      headers:
-        'Authorization': "Bearer #{process.env.TIMETASTIC_TOKEN}"
-      qs:
-        start: "#{date_string}T00:00:01Z"
-        end: "#{date_string}T23:59:59Z"
-        status: 'Approved'
-
-    @request request_options, (err, response, body) =>
-      if !err and response.statusCode is 200
-        users = body.holidays.map (user) => @user_output_string(user, today)
+    @find_holidays_on date_string, (err, users) ->
+      if !err
         attachments = []
         status = ":party: Everyone is here #{cmd}! :party:"
 
@@ -39,9 +32,27 @@ class Timetastic
           text: status,
           attachments: attachments,
       else
-        if err
-          console.log 'error: '+ response.statusCode
-          console.log body
+        console.log 'error: '+ response.statusCode
+        console.log body
+    return
+
+  find_holidays_on: (date_string, callback) ->
+    request_options =
+      url: 'https://app.timetastic.co.uk/api/holidays'
+      json: true
+      headers:
+        'Authorization': "Bearer #{process.env.TIMETASTIC_TOKEN}"
+      qs:
+        start: "#{date_string}T00:00:01Z"
+        end: "#{date_string}T23:59:59Z"
+        status: 'Approved'
+
+    @request request_options, (err, response, body) =>
+      if !err and response.statusCode is 200
+        users = body.holidays.map (user) => @user_output_string(user, today)
+        callback(err, users)
+      else
+        callback(err, null)
     return
 
   date_plus_as_string: (date, days) ->
