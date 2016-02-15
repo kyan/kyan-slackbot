@@ -153,7 +153,15 @@ module.exports = ->
 
         if user.is_active and not user.is_admin
           this.daily user, opts, (_task) =>
-            callback(this._format_task_entry(_task))
+            if _task.hasOwnProperty 'not_running'
+              # check to make sure the user is not on holiday when their
+              # time isn't on
+              this._is_user_on_holiday user, (_on_hols) =>
+                callback(this._format_task_entry(_task)) unless _on_hols
+              return
+            else
+              callback(this._format_task_entry(_task))
+
 
   this.daily = (user, opts, callback) =>
     harvest_opts = of_user: user.id
@@ -188,6 +196,10 @@ module.exports = ->
         username: 'HarvestBot'
 
       callback(opts)
+
+  this._is_user_on_holiday = (user) ->
+    tt.away { when: 'today' }, (msg) ->
+      # TODO
 
   this._fullname = (user) ->
     "#{user.first_name} #{user.last_name}"

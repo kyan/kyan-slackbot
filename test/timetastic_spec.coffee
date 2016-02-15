@@ -86,3 +86,17 @@ describe 'Timetastic', ->
         startDate: '2016-01-25T00:00:00'
         endDate: '2016-02-05T00:00:00'
       expect(tt.user_output_string(user, today)).to.equal('*Jon Doe* _Holiday, 8 days left_')
+
+  describe '#days_between()', ->
+    it 'should return the days between', ->
+      d1 = new Date('Sun, 15 Oct 2014 10:13:00 GMT')
+      d2 = new Date('Wed, 19 Oct 2014 10:13:00 GMT')
+      expect(tt.days_between(d1,d2)).to.equal(4)
+
+      d1 = new Date('2016,5,10')
+      d2 = new Date('2016,5,16')
+      expect(tt.days_between(d1,d2)).to.equal(6)
+
+      d1 = new Date('2016,5,16')
+      d2 = new Date('2016,5,16')
+      expect(tt.days_between(d1,d2)).to.equal(0)
