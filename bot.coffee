@@ -1,5 +1,6 @@
 Botkit = require('botkit')
 Tasks = require('./lib/harvest/tasks')
+Timetastic = require('./lib/timetastic/index')
 
 # Check for ENV's
 if not process.env.SLACK_TOKEN or not process.env.REDIS_URL or not process.env.PORT or not process.env.SLACK_ADMIN_IDS
@@ -45,7 +46,6 @@ controller.spawn(token: process.env.SLACK_TOKEN).startRTM (err)->
   throw new Error(err) if err
 
 controller.hears '(tt|who is off|whos off|who\'s off) (today|tomorrow)', ['direct_message','direct_mention'], (bot,message) ->
-  Timetastic = require('./lib/timetastic/index')
   cmd = message.match[2]
   tt = new Timetastic()
   tt.away { when: cmd }, (msg) -> bot.reply message, msg
@@ -94,7 +94,7 @@ controller.hears 'hv (t|timers)', 'direct_message', (bot,message) ->
   return if not permissions.admin_reply bot, message
   tasks = new Tasks('')
 
-  bot.startConversation message, (err,convo) ->
+  bot.startConversation message, (err, convo) ->
     tasks.timers (msg) -> convo.say msg
 
 controller.hears 'hv (today|last|\\d{1,2}-\\d{1,2}-\\d{4}) (.*)', 'direct_message', (bot,message) ->
@@ -107,6 +107,14 @@ controller.hears 'hv (today|last|\\d{1,2}-\\d{1,2}-\\d{4}) (.*)', 'direct_messag
 
   tasks.search datestr, email, (msg) -> bot.reply message, msg
 
+controller.hears 'hv (ap|auto-prompt)', 'direct_message', (bot, message) ->
+  return if not permissions.admin_reply bot, message
+  tasks = new Tasks('')
+  tt = new Timetastic()
+  bot.startConversation message, (err, convo) ->
+    return console.log 'An error occured', err if err
+    tasks.auto_prompt bot, tt, (opts) -> console.log(opts)
+
 controller.hears 'hv (p|prompt) (.*)', 'direct_message', (bot,message) ->
   return if not permissions.admin_reply bot, message
   username = message.match[2]
@@ -114,7 +122,7 @@ controller.hears 'hv (p|prompt) (.*)', 'direct_message', (bot,message) ->
   tasks = new Tasks('')
 
   tasks.prompt userid, bot, (_opts) ->
-    bot.api.chat.postMessage _opts , (err,response) ->
+    bot.api.chat.postMessage _opts, (err,response) ->
       return console.log 'An error occured', err if err
       bot.reply message, "#{username} has been gently prompted."
 

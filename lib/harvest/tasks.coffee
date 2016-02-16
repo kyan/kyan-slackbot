@@ -156,12 +156,11 @@ module.exports = ->
             if _task.hasOwnProperty 'not_running'
               # check to make sure the user is not on holiday when their
               # time isn't on
-              this._is_user_on_holiday user, (_on_hols) =>
+              this._is_user_on_holiday user, tt, (err, _on_hols) =>
                 callback(this._format_task_entry(_task)) unless _on_hols
               return
             else
               callback(this._format_task_entry(_task))
-
 
   this.daily = (user, opts, callback) =>
     harvest_opts = of_user: user.id
@@ -185,8 +184,31 @@ module.exports = ->
 
       callback(user, entries)
 
+  this.auto_prompt = (bot, tt, callback) =>
+    opts = running: false
+
+    # First get list of users that are on holiday
+    tt.users_away_today (err, users_away) =>
+      console.log('users that are on holiday today...', users_away)
+      this.users (_peoples) =>
+        for _person in _peoples
+          user = _person.user
+          console.log('found user...', user)
+
+          if user.is_active and not user.is_admin
+            this.daily user, opts, (_task) =>
+              if _task.hasOwnProperty 'not_running'
+                console.log('users timer is not running...', user)
+                # check to make sure the user is not on holiday when their
+                # time isn't on
+                # this._is_user_is_away user, users_away, (err, _on_hols) =>
+                #   console.log(user, _on_hols)
+                  # userid = ?
+                  # this.prompt(userid, bot, callback)) unless _on_hols
+                return
+
   this.prompt = (userid, bot, callback) ->
-    bot.api.im.open { user: userid }, (err,response) ->
+    bot.api.im.open { user: userid }, (err, response) ->
       channelid = response.channel.id
       text = "Hey. It looks like you're not recording any hours at the moment?"
       opts =
@@ -202,8 +224,8 @@ module.exports = ->
       result = !err && response.presence == 'active'
       callback(err, result)
 
-  this._is_user_on_holiday = (user) ->
-    tt.away { when: 'today' }, (msg) ->
+  this._is_user_on_holiday = (tt, user, callback) ->
+    tt.away { when: 'today' }, (err, msg) ->
       # TODO
 
   this._fullname = (user) ->

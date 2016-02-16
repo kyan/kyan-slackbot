@@ -5,7 +5,7 @@ class Timetastic
 
   users_away_today: (callback) ->
     date_string = @date_plus_as_string(new Date(), 0)
-    find_holidays_on(date_string, callback)
+    @find_holidays_on(date_string, callback)
 
   away: (opt, callback) ->
     cmd = opt.when or 'today'
