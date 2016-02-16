@@ -189,23 +189,25 @@ module.exports = ->
 
     # First get list of users that are on holiday
     tt.users_away_today (err, users_away) =>
-      console.log('users that are on holiday today...', users_away)
-      this.users (_peoples) =>
-        for _person in _peoples
-          user = _person.user
-          console.log('found user...', user)
+      if err == null
+        user_names_away = users_away.map (user) -> user.userName
+        console.log('users that are on holiday today...', user_names_away)
+        this.users (_peoples) =>
+          for _person in _peoples
+            user = _person.user
+            console.log('found user...', user)
 
-          if user.is_active and not user.is_admin
-            this.daily user, opts, (_task) =>
-              if _task.hasOwnProperty 'not_running'
-                console.log('users timer is not running...', user)
-                # check to make sure the user is not on holiday when their
-                # time isn't on
-                # this._is_user_is_away user, users_away, (err, _on_hols) =>
-                #   console.log(user, _on_hols)
-                  # userid = ?
-                  # this.prompt(userid, bot, callback)) unless _on_hols
-                return
+            if user.is_active and not user.is_admin and not this._is_user_away(user, user_names_away)
+              this.daily user, opts, (_task) =>
+                if _task.hasOwnProperty 'not_running'
+                  console.log('users timer is not running...', user)
+                  # check to make sure the user is not on holiday when their
+                  # time isn't on
+                  # this._is_user_is_away user, users_away, (err, _on_hols) =>
+                  #   console.log(user, _on_hols)
+                    # userid = ?
+                    # this.prompt(userid, bot, callback)) unless _on_hols
+                  return
 
   this.prompt = (userid, bot, callback) ->
     bot.api.im.open { user: userid }, (err, response) ->
@@ -265,4 +267,8 @@ module.exports = ->
     this._yesterday_as_date(date).toISOString()
       .split('T')[0]
       .replace(/-/g, '')
+
+  this._is_user_away = (user, user_names) ->
+    fullname = this._fullname(user)
+    _.contains(user_names, fullname)
   return

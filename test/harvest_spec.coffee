@@ -9,10 +9,10 @@ process.env.HARVEST_SUBDOMAIN = 'kyan'
 process.env.HARVEST_EMAIL = 'a@b.com'
 process.env.HARVEST_PASSWORD = 'password'
 
-tasks = require '../lib/harvest/tasks'
+Tasks = require '../lib/harvest/tasks'
 
 describe 'Tasks', ->
-  task = new tasks()
+  task = new Tasks()
 
   describe '#_fullname()', ->
     it 'should return the fullname of the user', ->
@@ -158,3 +158,14 @@ describe 'Tasks', ->
       task._is_user_online user, bot, (err, result) ->
         expect(result).to.be.false
         done()
+
+  describe '#_is_user_away', ->
+    user =
+      first_name: 'John'
+      last_name: 'Doe'
+
+    it 'should return true if the user is on the holiday list', () ->
+      expect(task._is_user_away user, ['Bob Roberts', 'John Doe', 'Alice Roberts']).to.be.true
+
+    it 'should return false if the user is NOT on the holiday list', () ->
+      expect(task._is_user_away user, ['Bob Roberts', 'Alice Roberts']).to.be.false
