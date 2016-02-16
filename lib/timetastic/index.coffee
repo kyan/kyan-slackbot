@@ -14,8 +14,10 @@ class Timetastic
     today = new Date()
     date_string = @date_plus_as_string(today, amt)
 
-    @find_holidays_on date_string, (err, users) ->
+    @find_holidays_on date_string, (err, users) =>
       if !err
+        users = users.map (user) => @user_output_string(user, today)
+        console.log(users)
         attachments = []
         status = ":party: Everyone is here #{cmd}! :party:"
 
@@ -49,8 +51,7 @@ class Timetastic
 
     @request request_options, (err, response, body) =>
       if !err and response.statusCode is 200
-        users = body.holidays.map (user) => @user_output_string(user, today)
-        callback(err, users)
+        callback(err, body.holidays)
       else
         callback(err, null)
     return
