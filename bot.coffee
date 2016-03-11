@@ -101,7 +101,7 @@ controller.hears 'hv (today|last|\\d{1,2}-\\d{1,2}-\\d{4}) (.*)', 'direct_messag
   return if not permissions.admin_reply bot, message
   username = message.match[2]
   userid = username.match(/<@(.*)>/i)[1]
-  email = slack_harvest_mapper[userid]
+  email = slack_harvest_mapper[userid].email
   datestr = message.match[1]
   tasks = new Tasks(email)
 
