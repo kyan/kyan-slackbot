@@ -185,28 +185,19 @@ module.exports = ->
       callback(user, entries)
 
   this.auto_prompt = (bot, tt, callback) =>
-    opts = running: false
-
     # First get list of users that are on holiday
     tt.users_away_today (err, users_away) =>
       if err == null
-        user_names_away = users_away.map (user) -> user.userName
-        console.log('users that are on holiday today...', user_names_away)
+        user_ids_away = users_away.map (user) -> user.userId
+        console.log('users that are on holiday today...', user_ids_away)
         this.users (_peoples) =>
           for _person in _peoples
             user = _person.user
-            console.log('found user...', user)
-
-            if user.is_active and not user.is_admin and not this._is_user_away(user, user_names_away)
+            if user.is_active and not user.is_admin and not this._is_user_away(user, user_ids_away)
+              opts = running: false
               this.daily user, opts, (_task) =>
                 if _task.hasOwnProperty 'not_running'
                   console.log('users timer is not running...', user)
-                  # check to make sure the user is not on holiday when their
-                  # time isn't on
-                  # this._is_user_is_away user, users_away, (err, _on_hols) =>
-                  #   console.log(user, _on_hols)
-                    # userid = ?
-                    # this.prompt(userid, bot, callback)) unless _on_hols
                   return
 
   this.prompt = (userid, bot, callback) ->
@@ -268,7 +259,14 @@ module.exports = ->
       .split('T')[0]
       .replace(/-/g, '')
 
-  this._is_user_away = (user, user_names) ->
-    fullname = this._fullname(user)
-    _.contains(user_names, fullname)
+  this._timetastic_id_from_email = (email) ->
+    slack_users = JSON.parse(process.env.SLACK_HARVEST_MAPPER)
+    matching_slack_user = _.find _.values(slack_users), (user) ->
+      user.email == email
+    matching_slack_user.tt
+
+  this._is_user_away = (user, timetastic_user_ids) ->
+    # timetastic_id = this._timetastic_id_from_email(user.email)
+    # timetastic_id and _.contains(timetastic_user_ids, timetastic_id)
+    null
   return
