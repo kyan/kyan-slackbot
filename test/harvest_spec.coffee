@@ -161,16 +161,33 @@ describe 'Tasks', ->
 
   describe '#_is_user_away', ->
     json = '{"U0HLJHWJW":{"email":"alice@example.com","tt":"234567"},"U0HLGQMBK":{"email":"bob@example.com","tt":"123456"}}'
-    process.env.SLACK_HARVEST_MAPPER = json
-    user =
-      id: 456789
-      email: 'bob@example.com'
 
     it 'should return true if the user is on the holiday list', () ->
+      process.env.SLACK_HARVEST_MAPPER = json
+      user =
+        id: 456789
+        email: 'bob@example.com'
       expect(task._is_user_away user, [123456, 234567]).to.be.true
 
     it 'should return false if the user is unknown', () ->
-      expect(task._is_user_away user, [123456, 234567]).to.be.true
+      process.env.SLACK_HARVEST_MAPPER = json
+      user =
+        id: 456789
+        email: 'eric@example.com'
+      expect(task._is_user_away user, [123456, 234567]).to.be.false
 
     it 'should return false if the user is NOT on the holiday list', () ->
+      process.env.SLACK_HARVEST_MAPPER = json
+      user =
+        id: 456789
+        email: 'bob@example.com'
       expect(task._is_user_away user, [345678, 456789]).to.be.false
+
+    describe 'when the SLACK_HARVEST_MAPPER env var is invalid', () ->
+      process.env.SLACK_HARVEST_MAPPER = '(*&^(*'
+
+      it 'should return false', () ->
+        user =
+          id: 456789
+          email: 'bob@example.com'
+        expect(task._is_user_away user, [345678, 456789]).to.be.false
