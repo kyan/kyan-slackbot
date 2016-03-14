@@ -160,7 +160,8 @@ describe 'Tasks', ->
         done()
 
   describe '#_is_user_away', ->
-    json = '{"U0HLJHWJW":{"email":"alice@example.com","tt":"234567"},"U0HLGQMBK":{"email":"bob@example.com","tt":"123456"}'
+    json = '{"U0HLJHWJW":{"email":"alice@example.com","tt":"234567"},"U0HLGQMBK":{"email":"bob@example.com","tt":"123456"}}'
+    process.env.SLACK_HARVEST_MAPPER = json
     user =
       id: 456789
       email: 'bob@example.com'

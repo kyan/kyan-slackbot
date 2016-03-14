@@ -266,7 +266,7 @@ module.exports = ->
     matching_slack_user.tt
 
   this._is_user_away = (user, timetastic_user_ids) ->
-    # timetastic_id = this._timetastic_id_from_email(user.email)
-    # timetastic_id and _.contains(timetastic_user_ids, timetastic_id)
-    null
+    timetastic_id = this._timetastic_id_from_email(user.email)
+    return (timetastic_id and _.contains(timetastic_user_ids, parseInt(timetastic_id, 10)))
+
   return
