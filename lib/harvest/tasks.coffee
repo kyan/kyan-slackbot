@@ -188,17 +188,22 @@ module.exports = ->
     # First get list of users that are on holiday
     tt.users_away_today (err, users_away) =>
       if err == null
-        user_ids_away = users_away.map (user) -> user.userId
+        user_ids_away = users_away.map (u) -> u.userId
         console.log('users that are on holiday today...', user_ids_away)
-        this.users (_peoples) =>
-          for _person in _peoples
-            user = _person.user
-            if user.is_active and not user.is_admin and not this._is_user_away(user, user_ids_away)
-              opts = running: false
-              this.daily user, opts, (_task) =>
-                if _task.hasOwnProperty 'not_running'
-                  console.log('users timer is not running...', user)
-                  return
+        this.users (people) =>
+          console.log(people)
+          for person in people
+            user = person.user
+            this.auto_prompt_user(user, bot, user_ids_away, callback)
+
+  this.auto_prompt_user = (user, bot, user_ids_away, callback) =>
+    console.log(user.email)
+    if user.is_active and not user.is_admin and not this._is_user_away(user, user_ids_away)
+      opts = running: false
+      this.daily user, opts, (_task) =>
+        if _task.hasOwnProperty 'not_running'
+          console.log('users timer is not running...', user, _task)
+          return
 
   this.prompt = (userid, bot, callback) ->
     bot.api.im.open { user: userid }, (err, response) ->
