@@ -7,9 +7,7 @@
     "autoprompt": "coffee autoprompter.coffee"
   },
   "dependencies": {
-    "botkit": "0.0.5",
-    "coffee-script": "1.10",
-    "dotenv": "^2.0.0",
+    "botkit": "0.0.14",
     "googleapis": "~2.1",
     "harvest": "~0.1",
     "moment": "^2.12.0",
