@@ -26,6 +26,5 @@ controller = Botkit.slackbot
 bot = controller.spawn(token: process.env.SLACK_TOKEN)
 
 tasks = new Tasks('')
-if time_helper.in_core_hours(time_helper.now_in_uk())
-  tt = new Timetastic()
-  tasks.auto_prompt bot, tt
+tt = new Timetastic()
+tasks.auto_prompt bot, tt

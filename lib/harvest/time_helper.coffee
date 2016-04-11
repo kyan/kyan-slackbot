@@ -1,6 +1,9 @@
 moment = require('moment-timezone')
 
 module.exports = {
+  now_in_tz: (timezone) ->
+    moment().tz(timezone)
+
   now_in_uk: () ->
     moment().tz('Europe/London')
 

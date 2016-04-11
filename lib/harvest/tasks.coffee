@@ -1,6 +1,7 @@
 Harvest = require('harvest')
 _ = require('underscore')
 moment = require('moment-timezone')
+time_helper = require('./time_helper')
 
 module.exports = ->
   this.harvest = new Harvest(
@@ -193,21 +194,21 @@ module.exports = ->
         this.users (people) =>
           for person in people
             user = person.user
-            this.auto_prompt_user(user, bot, user_ids_away)
+            if user.is_active and not user.is_admin and not this._is_user_away(user, user_ids_away) and this._is_work_time(user)
+              this.auto_prompt_user(user, bot, user_ids_away)
 
   this.auto_prompt_user = (user, bot, user_ids_away) =>
-    if user.is_active and not user.is_admin and not this._is_user_away(user, user_ids_away)
-      opts = running: false
-      this.daily user, opts, (_task) =>
-        if _task.hasOwnProperty 'not_running'
-          slack_user_id = this._slack_id_from_email(user.email)
-          if slack_user_id == 'U0HLP6P8W'
-            console.log 'notifying...', slack_user_id, user.email
-            this.prompt slack_user_id, bot, (opts) ->
-              bot.api.chat.postMessage opts, (err, response) ->
-                return console.log 'An error occured', err if err
-                console.log "#{user.email} has been gently prompted."
-          return
+    opts = running: false
+    this.daily user, opts, (_task) =>
+      if _task.hasOwnProperty 'not_running'
+        slack_user_id = this._slack_id_from_email(user.email)
+        if slack_user_id == 'U0HLP6P8W'
+          console.log 'notifying...', slack_user_id, user.email
+          this.prompt slack_user_id, bot, (opts) ->
+            bot.api.chat.postMessage opts, (err, response) ->
+              return console.log 'An error occured', err if err
+              console.log "#{user.email} has been gently prompted."
+        return
 
   this.prompt = (userid, bot, callback) ->
     bot.api.im.open { user: userid }, (err, response) ->
@@ -304,5 +305,10 @@ module.exports = ->
   this._is_user_away = (user, timetastic_user_ids) ->
     timetastic_id = this._timetastic_id_from_email(user.email)
     return !!(timetastic_id and _.contains(timetastic_user_ids, parseInt(timetastic_id, 10)))
+
+  this._is_work_time = (user) ->
+    timezone = this._timezone_for_user(user)
+    now = if timezone then time_helper.time_in_tz(timezone) else time_helper.time_in_uk()
+    time_helper.in_core_hours(now)
 
   return
