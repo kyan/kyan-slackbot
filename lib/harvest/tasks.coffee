@@ -189,20 +189,21 @@ module.exports = ->
     tt.users_away_today (err, users_away) =>
       if err == null
         user_ids_away = users_away.map (u) -> u.userId
-        console.log('users that are on holiday today...', user_ids_away)
         this.users (people) =>
-          console.log(people)
           for person in people
             user = person.user
             this.auto_prompt_user(user, bot, user_ids_away, callback)
 
   this.auto_prompt_user = (user, bot, user_ids_away, callback) =>
-    console.log(user.email)
     if user.is_active and not user.is_admin and not this._is_user_away(user, user_ids_away)
       opts = running: false
       this.daily user, opts, (_task) =>
         if _task.hasOwnProperty 'not_running'
           slack_user_id = this._slack_id_from_email(user.email)
+          # while debugging only send notifications to myself
+          if slack_user_id == 'U0HLP6P8W'
+            console.log 'notifying...', slack_user_id, user.email
+            this.prompt(slack_user_id, bot, callback)
           return
 
   this.prompt = (userid, bot, callback) ->
