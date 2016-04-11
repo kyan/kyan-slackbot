@@ -1,5 +1,6 @@
 Harvest = require('harvest')
 _ = require('underscore')
+moment = require('moment-timezone')
 
 module.exports = ->
   this.harvest = new Harvest(
@@ -301,5 +302,8 @@ module.exports = ->
   this._is_user_away = (user, timetastic_user_ids) ->
     timetastic_id = this._timetastic_id_from_email(user.email)
     return !!(timetastic_id and _.contains(timetastic_user_ids, parseInt(timetastic_id, 10)))
+
+  this.in_core_hours = (now) ->
+    (now.hour() >= 9 && now.hour() < 12) || (now.hour() >= 14 && now.hour() < 17)
 
   return
