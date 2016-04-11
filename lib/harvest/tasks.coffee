@@ -202,8 +202,7 @@ module.exports = ->
       opts = running: false
       this.daily user, opts, (_task) =>
         if _task.hasOwnProperty 'not_running'
-          console.log('users timer is not running...', user, _task)
-          # Convert timetastic user id to slack user id
+          slack_user_id = this._slack_id_from_email(user.email)
           return
 
   this.prompt = (userid, bot, callback) ->
@@ -276,6 +275,7 @@ module.exports = ->
     matching_slack_user?.tt
 
   this._slack_id_from_timetastic_id = (timetastic_id) ->
+    timetastic_id = timetastic_id.toString()
     try
       slack_users = JSON.parse(process.env.SLACK_HARVEST_MAPPER)
     catch e
@@ -284,6 +284,17 @@ module.exports = ->
     matching_slack_user = _.find _.pairs(slack_users), (pair) ->
       [slack_id, details] = pair
       details.tt == timetastic_id
+    matching_slack_user?[0]
+
+  this._slack_id_from_email = (email) ->
+    try
+      slack_users = JSON.parse(process.env.SLACK_HARVEST_MAPPER)
+    catch e
+      console.log(e)
+      return 0
+    matching_slack_user = _.find _.pairs(slack_users), (pair) ->
+      [slack_id, details] = pair
+      details.email == email
     matching_slack_user?[0]
 
   this._is_user_away = (user, timetastic_user_ids) ->
