@@ -303,7 +303,10 @@ module.exports = ->
     timetastic_id = this._timetastic_id_from_email(user.email)
     return !!(timetastic_id and _.contains(timetastic_user_ids, parseInt(timetastic_id, 10)))
 
+  this.now_in_uk = () ->
+    moment().tz('Europe/London')
+
   this.in_core_hours = (now) ->
-    (now.hour() >= 9 && now.hour() < 12) || (now.hour() >= 14 && now.hour() < 17)
+    (now.isoWeekday() < 6) && (now.hour() >= 9 && now.hour() < 12) || (now.hour() >= 14 && now.hour() < 17)
 
   return

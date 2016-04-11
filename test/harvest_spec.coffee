@@ -231,20 +231,26 @@ describe 'Tasks', ->
       expect(task._timetastic_id_from_email 'jim@example.com').to.be.undefined
 
   describe '#in_core_hours', ->
-
     it 'should return true during the morning', () ->
-      now = moment({ hour: 10, minute: 10 })
+      now = moment({ year: 2016, month: 3, day: 15, hour: 10, minute: 10 })
       expect(task.in_core_hours(now)).to.eql true
 
     it 'should return true during the afternoon', () ->
-      now = moment({ hour: 15, minute: 10 })
+      now = moment({ year: 2016, month: 3, day: 15, hour: 15, minute: 10 })
       expect(task.in_core_hours(now)).to.eql true
 
     it 'should return false during lunch', () ->
-      now = moment({ hour: 12, minute: 10 })
+      now = moment({ year: 2016, month: 3, day: 15, hour: 12, minute: 10 })
       expect(task.in_core_hours(now)).to.eql false
 
     it 'should return false after five', () ->
-      now = moment({ hour: 17, minute: 10 })
+      now = moment({ year: 2016, month: 3, day: 15, hour: 17, minute: 10 })
       expect(task.in_core_hours(now)).to.eql false
 
+    it 'should return false on Saturday', () ->
+      now = moment({ year: 2016, month: 3, day: 9, hour: 10, minute: 10 })
+      expect(task.in_core_hours(now)).to.eql false
+
+    it 'should return false on Sunday', () ->
+      now = moment({ year: 2016, month: 3, day: 10, hour: 10, minute: 10 })
+      expect(task.in_core_hours(now)).to.eql false
