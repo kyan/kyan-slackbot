@@ -27,4 +27,6 @@ bot = controller.spawn(token: process.env.SLACK_TOKEN)
 tasks = new Tasks('')
 if true #tasks.in_core_hours(tasks.now_in_uk())
   tt = new Timetastic()
-  tasks.auto_prompt bot, tt, (opts) -> process.exit(1)
+  tasks.auto_prompt bot, tt, (opts) ->
+    console.log(opts)
+    process.exit(1)

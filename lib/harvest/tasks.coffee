@@ -201,10 +201,12 @@ module.exports = ->
       this.daily user, opts, (_task) =>
         if _task.hasOwnProperty 'not_running'
           slack_user_id = this._slack_id_from_email(user.email)
-          # while debugging only send notifications to myself
           if slack_user_id == 'U0HLP6P8W'
             console.log 'notifying...', slack_user_id, user.email
-            this.prompt(slack_user_id, bot, callback)
+            this.prompt slack_user_id, bot, (opts) ->
+              bot.api.chat.postMessage opts, (err, response) ->
+                return console.log 'An error occured', err if err
+                console.log "#{user.email} has been gently prompted."
           return
 
   this.prompt = (userid, bot, callback) ->
