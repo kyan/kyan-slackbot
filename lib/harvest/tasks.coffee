@@ -302,13 +302,23 @@ module.exports = ->
       details.email == email
     matching_slack_user?[0]
 
+  this._timezone_from_email = (email) ->
+    try
+      slack_users = JSON.parse(process.env.SLACK_HARVEST_MAPPER)
+    catch e
+      console.log(e)
+      return 0
+    matching_slack_user = _.find _.values(slack_users), (user) ->
+      user.email == email
+    matching_slack_user?.timezone
+
   this._is_user_away = (user, timetastic_user_ids) ->
     timetastic_id = this._timetastic_id_from_email(user.email)
     return !!(timetastic_id and _.contains(timetastic_user_ids, parseInt(timetastic_id, 10)))
 
   this._is_work_time = (user) ->
-    timezone = this._timezone_for_user(user)
-    now = if timezone then time_helper.time_in_tz(timezone) else time_helper.time_in_uk()
+    timezone = this._timezone_from_email(user.email)
+    now = if timezone then time_helper.now_in_tz(timezone) else time_helper.now_in_uk()
     time_helper.in_core_hours(now)
 
   return

@@ -228,3 +228,18 @@ describe 'Tasks', ->
     it 'should return undefined given a missing email', () ->
       process.env.SLACK_HARVEST_MAPPER = json
       expect(task._timetastic_id_from_email 'jim@example.com').to.be.undefined
+
+  describe '#_timezome_from_email', ->
+    json = '{"U0HLJHWJW":{"email":"alice@example.com","tt":"234567"},"U0HLGQMBK":{"email":"bob@example.com","tt":"123456","timezone":"Asia/Kathmandu"}}'
+
+    it 'should return timezone given a valid email', () ->
+      process.env.SLACK_HARVEST_MAPPER = json
+      expect(task._timezone_from_email 'bob@example.com').to.eql('Asia/Kathmandu')
+
+    it 'should return undefined given a missing email', () ->
+      process.env.SLACK_HARVEST_MAPPER = json
+      expect(task._timezone_from_email 'jim@example.com').to.be.undefined
+
+    it 'should return undefined given a valid email that has no timezone specified', () ->
+      process.env.SLACK_HARVEST_MAPPER = json
+      expect(task._timezone_from_email 'alice@example.com').to.be.undefined
