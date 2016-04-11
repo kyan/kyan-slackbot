@@ -1,5 +1,6 @@
 Botkit = require('botkit')
 Tasks = require('./lib/harvest/tasks')
+time_helper = require('./lib/harvest/time_helper')
 Timetastic = require('./lib/timetastic/index')
 dotenv = require('dotenv')
 
@@ -25,6 +26,6 @@ controller = Botkit.slackbot
 bot = controller.spawn(token: process.env.SLACK_TOKEN)
 
 tasks = new Tasks('')
-if tasks.in_core_hours(tasks.now_in_uk())
+if time_helper.in_core_hours(time_helper.now_in_uk())
   tt = new Timetastic()
   tasks.auto_prompt bot, tt

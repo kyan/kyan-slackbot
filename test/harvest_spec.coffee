@@ -1,7 +1,6 @@
 chai = require "chai"
 sinon = require "sinon"
 sinonChai = require "sinon-chai"
-moment = require "moment-timezone"
 expect = chai.expect
 chai.use sinonChai
 
@@ -229,28 +228,3 @@ describe 'Tasks', ->
     it 'should return undefined given a missing email', () ->
       process.env.SLACK_HARVEST_MAPPER = json
       expect(task._timetastic_id_from_email 'jim@example.com').to.be.undefined
-
-  describe '#in_core_hours', ->
-    it 'should return true during the morning', () ->
-      now = moment({ year: 2016, month: 3, day: 15, hour: 10, minute: 10 })
-      expect(task.in_core_hours(now)).to.eql true
-
-    it 'should return true during the afternoon', () ->
-      now = moment({ year: 2016, month: 3, day: 15, hour: 15, minute: 10 })
-      expect(task.in_core_hours(now)).to.eql true
-
-    it 'should return false during lunch', () ->
-      now = moment({ year: 2016, month: 3, day: 15, hour: 12, minute: 10 })
-      expect(task.in_core_hours(now)).to.eql false
-
-    it 'should return false after five', () ->
-      now = moment({ year: 2016, month: 3, day: 15, hour: 17, minute: 10 })
-      expect(task.in_core_hours(now)).to.eql false
-
-    it 'should return false on Saturday', () ->
-      now = moment({ year: 2016, month: 3, day: 9, hour: 10, minute: 10 })
-      expect(task.in_core_hours(now)).to.eql false
-
-    it 'should return false on Sunday', () ->
-      now = moment({ year: 2016, month: 3, day: 10, hour: 10, minute: 10 })
-      expect(task.in_core_hours(now)).to.eql false
