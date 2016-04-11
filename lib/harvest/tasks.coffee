@@ -185,7 +185,7 @@ module.exports = ->
 
       callback(user, entries)
 
-  this.auto_prompt = (bot, tt, callback) =>
+  this.auto_prompt = (bot, tt) =>
     # First get list of users that are on holiday
     tt.users_away_today (err, users_away) =>
       if err == null
@@ -193,9 +193,9 @@ module.exports = ->
         this.users (people) =>
           for person in people
             user = person.user
-            this.auto_prompt_user(user, bot, user_ids_away, callback)
+            this.auto_prompt_user(user, bot, user_ids_away)
 
-  this.auto_prompt_user = (user, bot, user_ids_away, callback) =>
+  this.auto_prompt_user = (user, bot, user_ids_away) =>
     if user.is_active and not user.is_admin and not this._is_user_away(user, user_ids_away)
       opts = running: false
       this.daily user, opts, (_task) =>
