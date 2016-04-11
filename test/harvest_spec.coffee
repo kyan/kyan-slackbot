@@ -191,3 +191,14 @@ describe 'Tasks', ->
           id: 456789
           email: 'bob@example.com'
         expect(task._is_user_away user, [345678, 456789]).to.be.false
+
+  describe '#_slack_id_from_timetastic_id', ->
+    json = '{"U0HLJHWJW":{"email":"alice@example.com","tt":"234567"},"U0HLGQMBK":{"email":"bob@example.com","tt":"123456"}}'
+
+    it 'should return harvest id given a valid timetastic_id', () ->
+      process.env.SLACK_HARVEST_MAPPER = json
+      expect(task._slack_id_from_timetastic_id '234567').to.eql('U0HLJHWJW')
+
+    it 'should return undefined given a missing timetastic_id', () ->
+      process.env.SLACK_HARVEST_MAPPER = json
+      expect(task._slack_id_from_timetastic_id '999999').to.be.undefined
