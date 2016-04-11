@@ -8,6 +8,8 @@
   },
   "dependencies": {
     "botkit": "0.0.14",
+    "coffee-script": "1.10",
+    "dotenv": "^2.0.0",
     "googleapis": "~2.1",
     "harvest": "~0.1",
     "moment": "^2.12.0",
