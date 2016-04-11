@@ -28,6 +28,13 @@ $ heroku local web
 The app currently runs on Heroku. Deployment is automatic when something is
 merged into the ```master``` branch and the tests pass in travis.
 
+### Scheduler
+
+We use the Heroku scheduler to run the auto-prompter background job.
+This can be run using:
+
+    npm run autoprompter
+
 ### Debugging
 
 You can debug the app whilst it's running. This is really helpful and uses the
